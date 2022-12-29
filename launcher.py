@@ -2,8 +2,8 @@ import sys
 import os
 import shutil
 
-from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLineEdit, QCompleter
+from PyQt6.QtCore import QSize, Qt, QRect
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLineEdit, QCompleter, QComboBox
 
 # Subclass QMainWindow to customize your application's main window
 class MainWindow(QMainWindow):
@@ -21,27 +21,34 @@ class MainWindow(QMainWindow):
         self.calculator.clicked.connect(self.launchcalculator)
         self.obs = QPushButton("OBS")
         self.obs.clicked.connect(self.launchobs)
+        self.garageband = QPushButton("Garageband")
+        self.garageband.clicked.connect(self.launchgarageband)
         self.searchbar = QLineEdit()
         self.searchbar.textChanged.connect(self.update)
+        self.combobox = QComboBox()
+        self.combobox.setGeometry(QRect(30, 30, 10, 30))
+        self.combobox.addItem("All")
+        self.combobox.addItem("Music")
+        self.combobox.addItem("Video")
+        self.combobox.currentIndexChanged.connect(self.setmode)
+
         
         self.container = QWidget()
         self.layout = QVBoxLayout()
         self.container.setLayout(self.layout)
+        self.layout.addWidget(self.combobox)
         self.layout.addWidget(self.searchbar)
 
-        self.list = [self.imovie, self.photobooth, self.music, self.calculator, self.obs]
+        self.list = [self.imovie, self.photobooth, self.music, self.calculator, self.obs,
+            self.garageband]
         self.newlist = []
 
         for item in self.list:
             self.layout.addWidget(item)
+        
 
 
         self.setCentralWidget(self.container)
-    
-    def clearLayout(self):
-        self.layout.removeWidget(self.imoviebutton)
-        self.layout.removeWidget(self.photoboothbutton)
-        self.layout.removeWidget(self.musicbutton)
 
     def hide(self):
         self.imovie.hide()
@@ -49,6 +56,26 @@ class MainWindow(QMainWindow):
         self.music.hide()
         self.calculator.hide()
         self.obs.hide()
+        self.garageband.hide()
+    
+    def setmode(self):
+        self.hide()
+        print(self.combobox.currentIndexChanged)
+        if self.combobox.currentIndex() == 0:
+            self.imovie.show()
+            self.photobooth.show()
+            self.music.show()
+            self.calculator.show()
+            self.obs.show()
+            self.garageband.show()
+        if self.combobox.currentIndex() == 1:
+            self.imovie.show()
+            self.music.show()
+            self.garageband.show()
+        else:
+            self.photobooth.show()
+            self.imovie.show()
+            self.obs.show()
 
     def update(self, text):
         self.hide()
@@ -76,7 +103,8 @@ class MainWindow(QMainWindow):
     def launchobs(self):
         os.system("open /Applications/OBS.app")
 
-
+    def launchgarageband(self):
+        os.system("open /Applications/GarageBand.app")
 
 app = QApplication(sys.argv)
 
